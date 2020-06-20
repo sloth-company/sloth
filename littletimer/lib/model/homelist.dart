@@ -24,12 +24,17 @@ class HomeList {
     HomeList(
       imagePath: 'assets/banners/banner_entertainment.jpg',
       navigateScreen: FitnessAppHomeScreen(),
-      title: 'Entertainment'
+      title: 'Avatar'
     ),
     HomeList(
       imagePath: 'assets/banners/banner_games.jpg',
       navigateScreen: DesignCourseHomeScreen(),
-      title: 'Games'
+      title: 'Courses'
+    ),
+    HomeList(
+      imagePath: 'assets/banners/banner_timer.jpg',
+      navigateScreen: DesignCourseHomeScreen(),
+      title: 'Timer'
     ),
   ];
 }

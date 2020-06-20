@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               child: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Brain Friend :)',
+                  'Sloth',
                   style: TextStyle(
                     fontSize: 22,
                     color: AppTheme.darkText,
@@ -211,7 +211,7 @@ class HomeListView extends StatelessWidget {
                     Text(listData.title, style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 45)),
+                      fontSize: 36)),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
