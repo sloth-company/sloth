@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "474561090901",
+    "firebase_url": "https://littletimer-87057.firebaseio.com",
+    "project_id": "littletimer-87057",
+    "storage_bucket": "littletimer-87057.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474561090901:android:bc632b033b13a3d3d28bdc",
+        "android_client_info": {
+          "package_name": "com.jennifersong.littletimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474561090901-3dj94lk07i12j9br9khkjk90cgh0f8ud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvDewaPd-u13_jai1x-SMDwb9VJMnDRa8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474561090901-3dj94lk07i12j9br9khkjk90cgh0f8ud.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "474561090901-i626g4vml5tmo3q19ajlob7dhj3pdacj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jennifersong.littletimer"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
