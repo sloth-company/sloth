@@ -46,14 +46,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             return const SizedBox();
           } else {
             return Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top), //what
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   appBar(),
                   Expanded(
-                    child: FutureBuilder<bool>(
+                    child: FutureBuilder<bool>( //what
                       future: getData(),
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               (int index) {
                                 final int count = homeList.length;
                                 final Animation<double> animation =
-                                    Tween<double>(begin: 0.0, end: 1.0).animate(
+                                    Tween<double>(begin: 0.0, end: 1.0).animate( //what
                                   CurvedAnimation(
                                     parent: animationController,
                                     curve: Interval((1 / count) * index, 1.0,
@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Widget appBar() {
     return SizedBox(
-      height: AppBar().preferredSize.height,
+      height: AppBar().preferredSize.height, //what
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -199,7 +199,7 @@ class HomeListView extends StatelessWidget {
                 0.0, 50 * (1.0 - animation.value), 0.0),
             child: AspectRatio(
               aspectRatio: 1.5,
-              child: ClipRRect(
+              child: ClipRRect( //round that shit
                 borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                 child: Stack(
                   alignment: AlignmentDirectional.center,

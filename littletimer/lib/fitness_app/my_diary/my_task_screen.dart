@@ -7,15 +7,15 @@ import 'package:best_flutter_ui_templates/fitness_app/my_diary/meals_list_view.d
 import 'package:best_flutter_ui_templates/fitness_app/my_diary/water_view.dart';
 import 'package:flutter/material.dart';
 
-class MyDiaryScreen extends StatefulWidget {
-  const MyDiaryScreen({Key key, this.animationController}) : super(key: key);
+class MyTaskScreen extends StatefulWidget {
+  const MyTaskScreen({Key key, this.animationController}) : super(key: key);
 
   final AnimationController animationController;
   @override
-  _MyDiaryScreenState createState() => _MyDiaryScreenState();
+  _MyTaskScreenState createState() => _MyTaskScreenState();
 }
 
-class _MyDiaryScreenState extends State<MyDiaryScreen>
+class _MyTaskScreenState extends State<MyTaskScreen>
     with TickerProviderStateMixin {
   Animation<double> topBarAnimation;
 
@@ -253,7 +253,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  'My Productive Timer',
+                                  'My Tasks',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontFamily: FintnessAppTheme.fontName,

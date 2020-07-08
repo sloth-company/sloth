@@ -1,9 +1,14 @@
 import 'package:best_flutter_ui_templates/fitness_app/models/tabIcon_data.dart';
+import 'package:best_flutter_ui_templates/fitness_app/my_diary/my_task_screen.dart';
 import 'package:best_flutter_ui_templates/fitness_app/traning/training_screen.dart';
 import 'package:flutter/material.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'fintness_app_theme.dart';
 import 'my_diary/my_diary_screen.dart';
+import 'my_diary/my_avatar_screen.dart';
+import 'my_diary/my_timer_screen.dart';
+import 'my_diary/my_calendar_screen.dart';
+import 'traning/my_feed_screen.dart';
 
 class FitnessAppHomeScreen extends StatefulWidget {
   @override
@@ -25,11 +30,11 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
     tabIconsList.forEach((TabIconData tab) {
       tab.isSelected = false;
     });
-    tabIconsList[0].isSelected = true;
+    //tabIconsList[0].isSelected = true;
 
     animationController = AnimationController(
         duration: const Duration(milliseconds: 600), vsync: this);
-    tabBody = MyDiaryScreen(animationController: animationController);
+    tabBody = MyTaskScreen(animationController: animationController);
     super.initState();
   }
 
@@ -77,26 +82,59 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
         ),
         BottomBarView(
           tabIconsList: tabIconsList,
-          addClick: () {},
+          addClick: () {
+            animationController.reverse().then<dynamic>((data) {
+              if (!mounted) {
+                return;
+              }
+              setState(() {
+                tabBody =
+                    MyTaskScreen(animationController: animationController);
+              });
+              tabIconsList.forEach((TabIconData tab) {
+                tab.isSelected = false;
+              });
+            });
+          },
           changeIndex: (int index) {
-            if (index == 0 || index == 2) {
+            if (index == 0) {
               animationController.reverse().then<dynamic>((data) {
                 if (!mounted) {
                   return;
                 }
                 setState(() {
                   tabBody =
-                      MyDiaryScreen(animationController: animationController);
+                      MyTimerScreen(animationController: animationController);
                 });
               });
-            } else if (index == 1 || index == 3) {
+            } else if (index == 1) {
               animationController.reverse().then<dynamic>((data) {
                 if (!mounted) {
                   return;
                 }
                 setState(() {
                   tabBody =
-                      TrainingScreen(animationController: animationController);
+                      MyCalendarScreen(animationController: animationController);
+                });
+              });
+            } else if (index == 2) {
+              animationController.reverse().then<dynamic>((data) {
+                if (!mounted) {
+                  return;
+                }
+                setState(() {
+                  tabBody =
+                      MyFeedScreen(animationController: animationController);
+                });
+              });
+            } else if (index == 3) {
+              animationController.reverse().then<dynamic>((data) {
+                if (!mounted) {
+                  return;
+                }
+                setState(() {
+                  tabBody =
+                      MyAvatarScreen(animationController: animationController);
                 });
               });
             }

@@ -7,15 +7,15 @@ import 'package:best_flutter_ui_templates/fitness_app/my_diary/meals_list_view.d
 import 'package:best_flutter_ui_templates/fitness_app/my_diary/water_view.dart';
 import 'package:flutter/material.dart';
 
-class MyDiaryScreen extends StatefulWidget {
-  const MyDiaryScreen({Key key, this.animationController}) : super(key: key);
+class MyTimerScreen extends StatefulWidget {
+  const MyTimerScreen({Key key, this.animationController}) : super(key: key);
 
   final AnimationController animationController;
   @override
-  _MyDiaryScreenState createState() => _MyDiaryScreenState();
+  _MyTimerScreenState createState() => _MyTimerScreenState();
 }
 
-class _MyDiaryScreenState extends State<MyDiaryScreen>
+class _MyTimerScreenState extends State<MyTimerScreen>
     with TickerProviderStateMixin {
   Animation<double> topBarAnimation;
 
