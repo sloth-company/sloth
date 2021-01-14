@@ -54,7 +54,7 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   List<Task> _todoItems = [];
-  List<Category> _categories = [Category()];
+  List<Category> _categories = [Category(), Category(subject: "Math", color: Colors.lightBlueAccent)];
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -99,17 +99,20 @@ class _TodoListState extends State<TodoList> {
       // ignore: missing_return
       itemBuilder: (context, index) {
         if (index < _todoItems.length) {
-          return _buildTodoItem(_todoItems[index].taskName, index);
+          return _buildTodoItem(_todoItems[index], index);
         }
       },
     );
   }
 
-  Widget _buildTodoItem(String todoText, int index) {
+  Widget _buildTodoItem(Task todoTask, int index) {
     return Card(
       child: ListTile(
-          title: Text(todoText),
-          subtitle: Text("Category"),
+          title: Text(todoTask.taskName),
+          subtitle: Text(
+            todoTask.category.subject,
+            style: TextStyle(color: todoTask.category.color),
+          ),
           onTap: () => _promptRemoveTodoItem(index)
       ),
     );
@@ -117,7 +120,7 @@ class _TodoListState extends State<TodoList> {
 
   void _addTodoItem(String task){
     setState(() {
-      _todoItems.add(Task(taskName: task));
+      _todoItems.add(Task(taskName: task, category: dropdownValue == null ? _categories[0]:dropdownValue));
     });
   }
 
@@ -125,17 +128,20 @@ class _TodoListState extends State<TodoList> {
     return new ListView.builder(
       // ignore: missing_return
       itemBuilder: (context, index) {
-        if (index < _categories.length && index > 0) {
-          return _buildCategory(_categories[index].subject, index);
+        if (index < _categories.length - 1) {
+          return _buildCategory(_categories[index + 1], index);
         }
       },
     );
   }
 
-  Widget _buildCategory(String categoryText, int index) {
+  Widget _buildCategory(Category category, int index) {
     return Card(
       child: new ListTile(
-        title: new Text(categoryText),
+        title: new Text(
+          category.subject,
+          style: TextStyle(color: category.color),
+        ),
       ),
     );
   }
@@ -145,11 +151,12 @@ class _TodoListState extends State<TodoList> {
       _categories.add(task);
     });
   }
-
+  Category dropdownValue;
   void _pushAddTodoScreen(){
     bool checkIsPressable = false;
     String taskMainText;
-    Category dropdownValue = _categories[0];
+    //Category dropdownValue = _categories[0];
+    dropdownValue = null;
     Navigator.of(context).push(
         new MaterialPageRoute(
             builder: (context) {
@@ -184,6 +191,10 @@ class _TodoListState extends State<TodoList> {
                       Padding(
                         padding: const EdgeInsets.all(100.0),
                         child: DropdownButton(
+                          hint: Text(
+                            dropdownValue == null ? "Choose Category":dropdownValue.subject,
+                            style: TextStyle(color: dropdownValue == null ? Colors.deepPurple:dropdownValue.color),
+                          ),
                           value: dropdownValue,
                           icon: Icon(Icons.arrow_drop_down),
                           iconSize: 24,
@@ -254,10 +265,11 @@ class _TodoListState extends State<TodoList> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.collections_bookmark),
-          onPressed: () { _openDrawer; print("should have opened");},
+          onPressed: () { _openDrawer(); print("should have opened");},
         ),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
