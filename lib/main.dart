@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'task.dart';
 import 'categories.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 void main() {
   runApp(new TodoApp());
 }
@@ -21,7 +22,7 @@ class TodoApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -240,14 +241,24 @@ class _TodoListState extends State<TodoList> {
                       TextField(
                           autofocus: true,
                           onSubmitted: (val) {
-                            _addCategory(Category(subject: val));
+                            _addCategory(Category(subject: val, color: currentColor));
                             Navigator.pop(context);
                           },
                           decoration: InputDecoration(
                               hintText: "Enter task...",
                               contentPadding: const EdgeInsets.all(16.0)
                           )
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(100.0),
+                        child: RaisedButton(
+                          color: currentColor,
+                          onPressed: () => _showMaterialDialog(),
+                          child: Text(
+                            "Choose Color",
+                          ),
+                        ),
+                      ),
                     ],
                   )
               );
@@ -255,7 +266,58 @@ class _TodoListState extends State<TodoList> {
         )
     );
   }
+  // create some values
+  Color pickerColor = Colors.grey;
+  Color currentColor = Colors.grey;
 
+// ValueChanged<Color> callback
+  void changeColor(Color color) {
+    setState(() => pickerColor = color);
+  }
+  _showMaterialDialog(){
+    showDialog(
+      context: context,
+      child: AlertDialog(
+        title: const Text('Pick a color!'),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: pickerColor,
+            onColorChanged: changeColor,
+            showLabel: true,
+            pickerAreaHeightPercent: 0.8,
+          ),
+  // Use Material color picker:
+  //
+  // child: MaterialPicker(
+  //   pickerColor: pickerColor,
+  //   onColorChanged: changeColor,
+  //   showLabel: true, // only on portrait mode
+  // ),
+  //
+  // Use Block color picker:
+  //
+  // child: BlockPicker(
+  //   pickerColor: currentColor,
+  //   onColorChanged: changeColor,
+  // ),
+  //
+  // child: MultipleChoiceBlockPicker(
+  //   pickerColors: currentColors,
+  //   onColorsChanged: changeColors,
+  // ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: const Text('Got it'),
+          onPressed: () {
+            setState(() => currentColor = pickerColor);
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    ),
+  );
+  }
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -268,18 +330,21 @@ class _TodoListState extends State<TodoList> {
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.collections_bookmark),
+          icon: Icon(Icons.collections_bookmark, color: Colors.white,),
           onPressed: () { _openDrawer(); print("should have opened");},
         ),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text('Things to Get Done!'),
+        title: Text(
+            'Things to Get Done!',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: _buildTodoList(),
       floatingActionButton: FloatingActionButton(
         onPressed: _pushAddTodoScreen,
         tooltip: 'New Task',
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white,),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
