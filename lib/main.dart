@@ -150,13 +150,22 @@ class _TodoListState extends State<TodoList> {
           category.subject,
           style: TextStyle(color: category.color),
         ),
+        trailing: RaisedButton(
+          onPressed: () => _pushEditCategoryScreen(category, index),
+        ),
       ),
     );
   }
 
-  void _addCategory(Category task){
+  void _addCategory(Category category){
     setState(() {
-      _categories.add(task);
+      _categories.add(category);
+    });
+  }
+
+  void _editCategory(Category category, int index){
+    setState(() {
+      _categories[index + 1] = category;
     });
   }
 
@@ -314,6 +323,8 @@ class _TodoListState extends State<TodoList> {
   }
 
   void _pushAddCategoryScreen(){
+    currentColor = Colors.grey;
+    pickerColor = Colors.grey;
     Navigator.of(context).push(
         new MaterialPageRoute(
             builder: (context) {
@@ -351,9 +362,52 @@ class _TodoListState extends State<TodoList> {
         )
     );
   }
+
+  void _pushEditCategoryScreen(Category category, int index){
+    pickerColor = category.color;
+    currentColor = category.color;
+    Navigator.of(context).push(
+        new MaterialPageRoute(
+            builder: (context) {
+              return new Scaffold(
+                  appBar: AppBar(
+                      title: Text('Edit Category')
+                  ),
+                  body: Column(
+                    children: <Widget>[
+                      TextFormField(
+                          autofocus: true,
+                          initialValue: category.subject,
+                          onFieldSubmitted: (val) {
+                            _editCategory(Category(subject: val, color: currentColor), index);
+                            Navigator.pop(context);
+                          },
+                          decoration: InputDecoration(
+                              hintText: "Enter task...",
+                              contentPadding: const EdgeInsets.all(16.0)
+                          )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(100.0),
+                        child: RaisedButton(
+                          color: currentColor,
+                          onPressed: () => _showMaterialDialog(),
+                          child: Text(
+                            "Choose Color",
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+              );
+            }
+        )
+    );
+  }
+
   // create some values
-  Color pickerColor = Colors.grey;
-  Color currentColor = Colors.grey;
+  Color pickerColor;
+  Color currentColor;
 
 // ValueChanged<Color> callback
   void changeColor(Color color) {
@@ -390,18 +444,18 @@ class _TodoListState extends State<TodoList> {
   //   pickerColors: currentColors,
   //   onColorsChanged: changeColors,
   // ),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: const Text('Got it'),
-          onPressed: () {
-            setState(() => currentColor = pickerColor);
-            Navigator.of(context).pop();
-          },
         ),
-      ],
-    ),
-  );
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('Got it'),
+            onPressed: () {
+              setState(() => currentColor = pickerColor);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
   @override
   Widget build(BuildContext context) {
