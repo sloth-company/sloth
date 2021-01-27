@@ -114,7 +114,10 @@ class _TodoListState extends State<TodoList> {
             todoTask.category.subject,
             style: TextStyle(color: todoTask.category.color),
           ),
-          onTap: () => _promptRemoveTodoItem(index)
+          onTap: () => _promptRemoveTodoItem(index),
+          trailing: RaisedButton(
+            onPressed: () => _pushEditTodoScreen(todoTask, index),
+          ),
       ),
     );
   }
@@ -124,7 +127,11 @@ class _TodoListState extends State<TodoList> {
       _todoItems.add(Task(taskName: task, category: dropdownValue == null ? _categories[0]:dropdownValue));
     });
   }
-
+  void _editTodoItem(Task task, int index){
+    setState(() {
+      _todoItems[index] = task;
+    });
+  }
   Widget _buildCategoryList() {
     return new ListView.builder(
       // ignore: missing_return
@@ -152,6 +159,7 @@ class _TodoListState extends State<TodoList> {
       _categories.add(task);
     });
   }
+
   Category dropdownValue;
   void _pushAddTodoScreen(){
     bool checkIsPressable = false;
@@ -228,6 +236,83 @@ class _TodoListState extends State<TodoList> {
         )
     );
   }
+
+  void _pushEditTodoScreen(Task todoTask, int index){
+    bool checkIsPressable = false;
+    String taskMainText;
+    dropdownValue = todoTask.category;
+    Navigator.of(context).push(
+        new MaterialPageRoute(
+            builder: (context) {
+              return new Scaffold(
+                  appBar: AppBar(
+                    title: Text('Edit Task'),
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.check),
+                        onPressed: (){
+                          if (checkIsPressable){
+                            _editTodoItem(Task(taskName: taskMainText, category: dropdownValue), index);
+                            Navigator.pop(context);
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                  body: Column(
+                    children: <Widget>[
+                      TextFormField(
+                          autofocus: true,
+                          initialValue: todoTask.taskName,
+                          onFieldSubmitted: (val) {
+                            taskMainText = val;
+                            checkIsPressable = true;
+                          },
+                          decoration: InputDecoration(
+                              hintText: "Enter task...",
+                              contentPadding: const EdgeInsets.all(16.0)
+                          )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(100.0),
+                        child: DropdownButton(
+                          hint: Text(
+                            dropdownValue == null ? "Choose Category":dropdownValue.subject,
+                            style: TextStyle(color: dropdownValue == null ? Colors.deepPurple:dropdownValue.color),
+                          ),
+                          value: dropdownValue,
+                          icon: Icon(Icons.arrow_drop_down),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (newValue) {
+                            setState(() {
+                              dropdownValue = newValue;
+                            });
+                          },
+                          items: _categories.map<DropdownMenuItem> ((value) {
+                            return DropdownMenuItem(
+                              value: value,
+                              child: Text(
+                                value.subject,
+                                style: TextStyle(color: value.color),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    ],
+                  )
+              );
+            }
+        )
+    );
+  }
+
   void _pushAddCategoryScreen(){
     Navigator.of(context).push(
         new MaterialPageRoute(
