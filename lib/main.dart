@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'task.dart';
-import 'category.dart';
-import 'home.dart';
+import 'categories.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-
+import 'package:jonah_sloth_ui/home.dart';
 void main() {
   runApp(new TodoApp());
 }
@@ -31,7 +30,7 @@ class TodoApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
-      home: TodoList(),
+      home: new TodoList(),
     );
   }
 }
