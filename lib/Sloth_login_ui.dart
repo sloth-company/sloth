@@ -80,13 +80,17 @@ class _LoginPageState extends State<LoginPage> {
             padding: EdgeInsets.all(16.0),
             child: new Form(
               key: formKey,
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Image(
-                    image: AssetImage('assets/Sloth_temp_logo.jpg'),
-                  ),
-                ] + buildInputs() + buildSubmitButtons(),
+              child: new SingleChildScrollView(
+                child: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Image(
+                      image: AssetImage('assets/Sloth_temp_logo.jpg'),
+                      height: 200,
+                      width: 200,
+                    ),
+                  ] + buildInputs() + buildSubmitButtons(),
+                ),
               ),
             )
         )
@@ -118,6 +122,7 @@ class _LoginPageState extends State<LoginPage> {
               formKey.currentState.save();
               print(_email);
               print(_password);
+              Navigator.pop(context);
             }
           },
           //validateAndSubmit,
@@ -136,6 +141,7 @@ class _LoginPageState extends State<LoginPage> {
               formKey.currentState.save();
               print(_email);
               print(_password);
+              Navigator.pop(context);
             }
           },
           //validateAndSubmit,

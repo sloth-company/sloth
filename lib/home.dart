@@ -443,6 +443,15 @@ class _TodoListState extends State<TodoList> {
           'Home',
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.person,
+              color: Colors.white,
+            ),
+            onPressed: () => Navigator.pushNamed(context, '/login'),
+          ),
+        ],
       ),
       AppBar(
         title: Text(

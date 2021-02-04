@@ -3,6 +3,8 @@ import 'task.dart';
 import 'categories.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:jonah_sloth_ui/home.dart';
+import 'Sloth_login_ui.dart';
+import 'loading.dart';
 void main() {
   runApp(new TodoApp());
 }
@@ -30,7 +32,12 @@ class TodoApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
-      home: new TodoList(),
+      initialRoute: '/home',
+      routes: {
+        '/': (context) => Loading(),  //This doesn't exist yet but will probably be needed later
+        '/login': (context) => LoginPage(),
+        '/home': (context) => TodoList(),
+      },
     );
   }
 }
