@@ -1,10 +1,10 @@
 //import 'dart:html';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'task.dart';
-import 'categories.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+//import 'task.dart';
+//import 'categories.dart';
+//import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'home.dart';
 import 'Sloth_login_ui.dart';
 import 'loading.dart';
