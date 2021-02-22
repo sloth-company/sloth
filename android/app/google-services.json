@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "903283667611",
+    "firebase_url": "https://sloth-master-app.firebaseio.com",
+    "project_id": "sloth-master-app",
+    "storage_bucket": "sloth-master-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903283667611:android:9ad6158e93c853f2760c3e",
+        "android_client_info": {
+          "package_name": "com.example.jonah_sloth_ui"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903283667611-k1hg0setl5j1de7em718b152hfhr73s0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLFARsfo6xS3nnJQYeFvSJjnVB8ZOtanE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903283667611-k1hg0setl5j1de7em718b152hfhr73s0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "903283667611-2vnf3vnf7pjmcle57r3gnfmjq4jle2r3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.SlothCo.sloth"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903283667611:android:1f544d187394602e760c3e",
+        "android_client_info": {
+          "package_name": "com.slothco.sloth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903283667611-k1hg0setl5j1de7em718b152hfhr73s0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLFARsfo6xS3nnJQYeFvSJjnVB8ZOtanE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903283667611-k1hg0setl5j1de7em718b152hfhr73s0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "903283667611-2vnf3vnf7pjmcle57r3gnfmjq4jle2r3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.SlothCo.sloth"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
