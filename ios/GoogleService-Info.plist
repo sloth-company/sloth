@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>903283667611-eccvhja1l6knopsvndq8ag4vrfk11ekm.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.903283667611-eccvhja1l6knopsvndq8ag4vrfk11ekm</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDc8BlfoaiwYJt9Zll-v0EJSgVOie8H5QY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>903283667611</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.slothco.sloth</string>
+	<key>PROJECT_ID</key>
+	<string>sloth-master-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sloth-master-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:903283667611:ios:7583425759af6ab7760c3e</string>
+	<key>DATABASE_URL</key>
+	<string>https://sloth-master-app.firebaseio.com</string>
+</dict>
+</plist>
