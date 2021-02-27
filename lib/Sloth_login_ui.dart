@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'auth.dart';
@@ -11,7 +12,8 @@ class LoginPage extends StatefulWidget {
   //LoginPage({this.auth, this.onSignedIn});
   //final BaseAuth auth;
   //final VoidCallback onSignedIn;
-
+  //LoginPage({this.firestore});
+  //final FirebaseFirestore firestore;
   @override
   State<StatefulWidget> createState() => new _LoginPageState();
 }
@@ -120,6 +122,52 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: true,
         validator: (value) => value.isEmpty ? 'Password can\'t be empty': null,
         onSaved: (value) => _password = value,
+      ),
+      _formType == FormType.login ? SizedBox(width: 0, height: 0,): StreamBuilder<QuerySnapshot>(
+        //stream: widget.firestore.collection("master lms list").snapshots(),
+        stream: FirebaseFirestore.instance.collection("testing").snapshots(),
+        builder: (context, snapshot){
+          if(!snapshot.hasData){
+            return Text("Loading");
+          }
+          else{
+            List<DropdownMenuItem> lmsList=[];
+            String dropdownValue;
+            for(int i=0; i<snapshot.data.docs.length; i++){
+              DocumentSnapshot snap = snapshot.data.docs[i];
+              lmsList.add(
+                DropdownMenuItem(
+                  child: Text(
+                    snap.id,
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
+                  value: "${snap.id}",
+                )
+              );
+            }
+            return DropdownButton(
+              items: lmsList,
+              hint: Text(
+                "Select your school's Learning Management System",
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+              icon: Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+              elevation: 16,
+              style: TextStyle(color: Theme.of(context).primaryColor),
+              underline: Container(
+                height: 2,
+                color: Theme.of(context).primaryColor,
+              ),
+              value: dropdownValue,
+              onChanged: (newValue) {
+                setState(() {
+                  dropdownValue = newValue;
+                });
+              },
+            );
+          }
+        },
       ),
     ];
   }

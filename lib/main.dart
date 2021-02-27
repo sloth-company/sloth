@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'Sloth_login_ui.dart';
 import 'loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(new TodoApp());
@@ -16,6 +17,7 @@ void main() {
 class TodoApp extends StatelessWidget {
   // This widget is the root of your application.
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  //final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -53,6 +55,8 @@ class TodoApp extends StatelessWidget {
               '/': (context) => Loading(),  //This doesn't exist yet but will probably be needed later
               '/login': (context) => LoginPage(),
               '/home': (context) => TodoList(),
+//              '/login': (context) => LoginPage(firestore: firestore,),
+//              '/home': (context) => TodoList(firestore: firestore,),
             },
           );
         }

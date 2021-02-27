@@ -1,12 +1,14 @@
 //import 'dart:html';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'task.dart';
 import 'categories.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 class TodoList extends StatefulWidget {
-  TodoList({Key key, this.title}) : super(key: key);
+  TodoList({Key key, this.title,}) : super(key: key);
+  //TodoList({Key key, this.title, this.firestore}) : super(key: key);
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -16,6 +18,7 @@ class TodoList extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
   final String title;
+  //final FirebaseFirestore firestore;
 
   @override
   _TodoListState createState() => _TodoListState();
@@ -488,6 +491,18 @@ class _TodoListState extends State<TodoList> {
                 color: Colors.white,
               ),
             ),
+          ),
+          StreamBuilder(
+            stream: FirebaseFirestore.instance.collection("testing").snapshots(),
+            builder: (context, snapshot){
+              if(!snapshot.hasData){
+                return Text("Loading");
+              }
+              else{
+                DocumentSnapshot snap = snapshot.data.docs[0];
+                return Text(snap.id);
+              }
+            }
           ),
           IconButton(
             icon: Icon(
