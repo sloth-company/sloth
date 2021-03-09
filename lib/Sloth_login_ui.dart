@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
   //final BaseAuth auth;
   //final VoidCallback onSignedIn;
   //LoginPage({this.firestore});
-  //final FirebaseFirestore firestore;
+  //FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   State<StatefulWidget> createState() => new _LoginPageState();
 }
@@ -23,11 +23,13 @@ enum FormType {
   register
 }
 
+Stream firestoreStream() => FirebaseFirestore.instance.collection("master lms list").snapshots();
 
 class _LoginPageState extends State<LoginPage> {
 
   final formKey = new GlobalKey<FormState>();
-
+  //final Stream firestoreStream = FirebaseFirestore.instance.collection("master lms list").snapshots();
+  final Stream _firestoreStream = firestoreStream();
   String _email;
   String _password;
   FormType _formType = FormType.login;
@@ -124,9 +126,8 @@ class _LoginPageState extends State<LoginPage> {
         onSaved: (value) => _password = value,
       ),
       _formType == FormType.login ? SizedBox(width: 0, height: 0,): StreamBuilder<QuerySnapshot>(
-        //stream: widget.firestore.collection("master lms list").snapshots(),
-        stream: FirebaseFirestore.instance.collection("testing").snapshots(),
-        builder: (context, snapshot){
+        stream: _firestoreStream,
+        builder: (context, AsyncSnapshot snapshot){
           if(!snapshot.hasData){
             return Text("Loading");
           }

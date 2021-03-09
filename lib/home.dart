@@ -492,15 +492,14 @@ class _TodoListState extends State<TodoList> {
               ),
             ),
           ),
-          StreamBuilder(
-            stream: FirebaseFirestore.instance.collection("testing").snapshots(),
+          FutureBuilder(
+            future: FirebaseFirestore.instance.collection("testing").doc('bruh').get(),
             builder: (context, snapshot){
               if(!snapshot.hasData){
                 return Text("Loading");
               }
               else{
-                DocumentSnapshot snap = snapshot.data.docs[0];
-                return Text(snap.id);
+                return Expanded(child: Text(snapshot.data.id));
               }
             }
           ),
@@ -511,6 +510,8 @@ class _TodoListState extends State<TodoList> {
             ),
             onPressed: authStatus == AuthStatus.notSignedIn ? () => Navigator.pushNamed(context, '/login'): () async {
               await FirebaseAuth.instance.signOut();
+//              DocumentSnapshot snap = await FirebaseFirestore.instance.collection('testing').doc('bruh').get();
+//              print('${snap.id}');
             },
           ),
         ],
