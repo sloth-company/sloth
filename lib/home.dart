@@ -60,6 +60,19 @@ class _TodoListState extends State<TodoList> {
       }
     });
     print("state refreshed");
+    FirebaseFirestore.instance
+        .collection('master lms list')
+        .doc('Canvas')
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print('Document exists on the database');
+        print(documentSnapshot.id);
+      }
+      else {
+        print('sad');
+      }
+    });
   }
   List<Task> _todoItems = [];
   List<Category> _categories = [Category(), Category(subject: "Math", color: Colors.lightBlueAccent)];
@@ -492,17 +505,17 @@ class _TodoListState extends State<TodoList> {
               ),
             ),
           ),
-          FutureBuilder(
-            future: FirebaseFirestore.instance.collection("testing").doc('bruh').get(),
-            builder: (context, snapshot){
-              if(!snapshot.hasData){
-                return Text("Loading");
-              }
-              else{
-                return Expanded(child: Text(snapshot.data.id));
-              }
-            }
-          ),
+//          FutureBuilder(
+//            future: FirebaseFirestore.instance.collection("testing").doc('bruh').get(),
+//            builder: (context, snapshot){
+//              if(!snapshot.hasData){
+//                return Text("Loading");
+//              }
+//              else{
+//                return Expanded(child: Text(snapshot.data.id));
+//              }
+//            }
+//          ),
           IconButton(
             icon: Icon(
               Icons.person,

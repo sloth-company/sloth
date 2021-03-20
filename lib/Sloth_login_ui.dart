@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:dropdown_formfield/dropdown_formfield.dart';
 //import 'auth.dart';
 //import 'root_page.dart';
 
@@ -23,16 +24,25 @@ enum FormType {
   register
 }
 
-Stream firestoreStream() => FirebaseFirestore.instance.collection("master lms list").snapshots();
+Stream firestoreStreamLMS() => FirebaseFirestore.instance.collection("master lms list").snapshots();
 
 class _LoginPageState extends State<LoginPage> {
 
   final formKey = new GlobalKey<FormState>();
   //final Stream firestoreStream = FirebaseFirestore.instance.collection("master lms list").snapshots();
-  final Stream _firestoreStream = firestoreStream();
+  final Stream _firestoreStreamLMS = firestoreStreamLMS();
   String _email;
   String _password;
   FormType _formType = FormType.login;
+  String dropdownValueLMS;
+  String dropdownValueSchool;
+
+  void initState(){
+    super.initState();
+    setState(() {
+      dropdownValueSchool = null;
+    });
+  }
 
   bool validateAndSave() {
     final form = formKey.currentState;
@@ -54,7 +64,13 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pop(context);
         } else {
           UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
-          // print('Signed in: $userId');
+          final User user = FirebaseAuth.instance.currentUser;
+          CollectionReference users = FirebaseFirestore.instance.collection('users');
+          users.doc(user.uid).set({
+            'email': _email,
+            'lms': dropdownValueLMS,
+            'school': dropdownValueSchool,
+          });
           print(_email);
           print(_password);
           Navigator.pop(context);
@@ -81,22 +97,27 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  void removeSchool(){
+    setState(() {
+      dropdownValueLMS = null;
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
             "Sloth " + (_formType == FormType.login ? "Login":"Sign Up"),
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.orange,
         ),
-        body: new Container(
+        body: Container(
             padding: EdgeInsets.all(16.0),
-            child: new Form(
+            child: Form(
               key: formKey,
-              child: new SingleChildScrollView(
-                child: new Column(
+              child: SingleChildScrollView(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Image(
@@ -126,46 +147,83 @@ class _LoginPageState extends State<LoginPage> {
         onSaved: (value) => _password = value,
       ),
       _formType == FormType.login ? SizedBox(width: 0, height: 0,): StreamBuilder<QuerySnapshot>(
-        stream: _firestoreStream,
+        stream: _firestoreStreamLMS,
         builder: (context, AsyncSnapshot snapshot){
           if(!snapshot.hasData){
             return Text("Loading");
           }
           else{
-            List<DropdownMenuItem> lmsList=[];
-            String dropdownValue;
+            List lmsList=[];
             for(int i=0; i<snapshot.data.docs.length; i++){
               DocumentSnapshot snap = snapshot.data.docs[i];
               lmsList.add(
-                DropdownMenuItem(
-                  child: Text(
-                    snap.id,
-                    style: TextStyle(color: Theme.of(context).primaryColor),
-                  ),
-                  value: "${snap.id}",
-                )
+                {'display': snap.id, 'value': snap.id}
               );
             }
-            return DropdownButton(
-              items: lmsList,
-              hint: Text(
-                "Select your school's Learning Management System",
-                style: TextStyle(color: Theme.of(context).primaryColor),
-              ),
-              icon: Icon(Icons.arrow_drop_down),
-              iconSize: 24,
-              elevation: 16,
-              style: TextStyle(color: Theme.of(context).primaryColor),
-              underline: Container(
-                height: 2,
-                color: Theme.of(context).primaryColor,
-              ),
-              value: dropdownValue,
+            return DropDownFormField(
+              dataSource: lmsList,
+              titleText: "Learning Management System",
+              hintText: "Please select the one your school uses",
+              value: dropdownValueLMS,
               onChanged: (newValue) {
+//                setState(() {
+//                  removeSchool();
+//                });
                 setState(() {
-                  dropdownValue = newValue;
+                  dropdownValueLMS = newValue;
+                  dropdownValueSchool = null;
+                });
+//                setState(() {
+//                  dropdownValueLMS = null;
+//                });
+              },
+              onSaved: (newValue) {
+//                setState(() {
+//                  removeSchool();
+//                });
+                setState(() {
+                  dropdownValueLMS = newValue;
                 });
               },
+              textField: 'display',
+              valueField: 'value',
+              validator: (value) => dropdownValueLMS == null ? 'LMS can\'t be empty; select \"other\" if your school doesn\'t use one' : null,
+            );
+          }
+        },
+      ),
+      _formType == FormType.login || dropdownValueLMS == null ? new SizedBox(width: 0, height: 0,): new StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('master lms list/$dropdownValueLMS/schools').snapshots(),
+        builder: (context, AsyncSnapshot snapshot){
+          if(!snapshot.hasData){
+            return Text("Loading");
+          }
+          else{
+            List schoolList=[];
+            for(int i=0; i<snapshot.data.docs.length; i++){
+              DocumentSnapshot snap = snapshot.data.docs[i];
+              schoolList.add(
+                  {'display': snap.id, 'value': snap.id}
+              );
+            }
+            return DropDownFormField(
+              dataSource: schoolList,
+              titleText: "School",
+              hintText: "Please select your school",
+              value: dropdownValueSchool,
+              onChanged: (newValue) {
+                setState(() {
+                  dropdownValueSchool = newValue;
+                });
+              },
+              onSaved: (newValue) {
+                setState(() {
+                  dropdownValueSchool = newValue;
+                });
+              },
+              textField: 'display',
+              valueField: 'value',
+              validator: (value) => dropdownValueSchool == null ? 'School can\'t be empty' : null,
             );
           }
         },
