@@ -1,11 +1,14 @@
 //import 'dart:html';
 
+//import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'task.dart';
 import 'categories.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'hex_color.dart';
 class TodoList extends StatefulWidget {
   TodoList({Key key, this.title,}) : super(key: key);
   //TodoList({Key key, this.title, this.firestore}) : super(key: key);
@@ -33,12 +36,14 @@ enum AuthStatus {
 class _TodoListState extends State<TodoList> {
 
   AuthStatus authStatus = AuthStatus.notSignedIn;
+
+
   initState() {
     super.initState();
     if(FirebaseAuth.instance.currentUser != null){
         setState(() {
           authStatus = AuthStatus.signedIn;
-          //and some function to initialize user data
+          //Stream categoriesStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list').snapshots();
         });
     }
     else{
@@ -153,14 +158,32 @@ class _TodoListState extends State<TodoList> {
     });
   }
   Widget _buildCategoryList() {
-    return new ListView.builder(
-      // ignore: missing_return
-      itemBuilder: (context, index) {
-        if (index < _categories.length - 1) {
-          return _buildCategory(_categories[index + 1], index);
+    return authStatus != AuthStatus.signedIn ? Container(child: Text('please sign in'),) : StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list').snapshots(),
+        builder: (context, AsyncSnapshot snapshot) {
+          List categoryList = [];
+          for(int i=0; i<snapshot.data.docs.length; i++){
+            DocumentSnapshot snap = snapshot.data.docs[i];
+            categoryList.add(Category(subject: snap.id, color: HexColor(snap['color'])));
+          }
+          return new ListView.builder(
+            // ignore: missing_return
+            itemBuilder: (context, index) {
+              if (index < categoryList.length) {
+                return _buildCategory(categoryList[index], index);
+              }
+            },
+          );
         }
-      },
     );
+//    return new ListView.builder(
+//      // ignore: missing_return
+//      itemBuilder: (context, index) {
+//        if (index < _categories.length - 1) {
+//          return _buildCategory(_categories[index + 1], index);
+//        }
+//      },
+//    );
   }
 
   Widget _buildCategory(Category category, int index) {

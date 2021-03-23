@@ -71,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
             'lms': dropdownValueLMS,
             'school': dropdownValueSchool,
           });
+          users.doc(user.uid).collection('master category list').doc('miscellaneous').set({'color': '0xff808080'});
           print(_email);
           print(_password);
           Navigator.pop(context);
