@@ -36,7 +36,7 @@ enum AuthStatus {
 class _TodoListState extends State<TodoList> {
 
   AuthStatus authStatus = AuthStatus.notSignedIn;
-
+  //User user;
 
   initState() {
     super.initState();
@@ -44,6 +44,7 @@ class _TodoListState extends State<TodoList> {
         setState(() {
           authStatus = AuthStatus.signedIn;
           //Stream categoriesStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list').snapshots();
+          //user = FirebaseAuth.instance.currentUser;
         });
     }
     else{
@@ -164,7 +165,7 @@ class _TodoListState extends State<TodoList> {
           List categoryList = [];
           for(int i=0; i<snapshot.data.docs.length; i++){
             DocumentSnapshot snap = snapshot.data.docs[i];
-            categoryList.add(Category(subject: snap.id, color: HexColor(snap['color'])));
+            categoryList.add(Category(subject: snap['category'], color: HexColor(snap['color']), id: snap.id));
           }
           return new ListView.builder(
             // ignore: missing_return
@@ -195,21 +196,26 @@ class _TodoListState extends State<TodoList> {
         ),
         trailing: RaisedButton(
           onPressed: () => _pushEditCategoryScreen(category, index),
+
         ),
       ),
     );
   }
 
   void _addCategory(Category category){
-    setState(() {
-      _categories.add(category);
-    });
+//    setState(() {
+//      _categories.add(category);
+//    });
+    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list').add({'category': category.subject, 'color': currentColor.value.toRadixString(16)});
   }
 
   void _editCategory(Category category, int index){
-    setState(() {
-      _categories[index + 1] = category;
-    });
+//    setState(() {
+//      _categories[index + 1] = category;
+//    });
+    print('yo:' + category.id);
+    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list')
+        .doc(category.id).set({'color': category.color.value.toRadixString(16), 'category': category.subject});
   }
 
   Category dropdownValue;
@@ -422,7 +428,7 @@ class _TodoListState extends State<TodoList> {
                           autofocus: true,
                           initialValue: category.subject,
                           onFieldSubmitted: (val) {
-                            _editCategory(Category(subject: val, color: currentColor), index);
+                            _editCategory(Category(subject: val, color: currentColor, id: category.id), index);
                             Navigator.pop(context);
                           },
                           decoration: InputDecoration(
