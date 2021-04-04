@@ -2,13 +2,19 @@
 
 //import 'dart:html';
 
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sloth/category_screens.dart';
+import 'package:sloth/task_screens.dart';
 import 'task.dart';
 import 'categories.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'hex_color.dart';
+import 'package:dropdown_formfield/dropdown_formfield.dart';
+import 'package:flutter_datetime_formfield/flutter_datetime_formfield.dart';
 class TodoList extends StatefulWidget {
   TodoList({Key key, this.title,}) : super(key: key);
   //TodoList({Key key, this.title, this.firestore}) : super(key: key);
@@ -34,10 +40,9 @@ enum AuthStatus {
 
 
 class _TodoListState extends State<TodoList> {
-
   AuthStatus authStatus = AuthStatus.notSignedIn;
   //User user;
-
+  int _currentIndex = 0;
   initState() {
     super.initState();
     if(FirebaseAuth.instance.currentUser != null){
@@ -66,23 +71,20 @@ class _TodoListState extends State<TodoList> {
       }
     });
     print("state refreshed");
-    FirebaseFirestore.instance
-        .collection('master lms list')
-        .doc('Canvas')
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        print('Document exists on the database');
-        print(documentSnapshot.id);
-      }
-      else {
-        print('sad');
-      }
-    });
+//    FirebaseFirestore.instance
+//        .collection('master lms list')
+//        .doc('Canvas')
+//        .get()
+//        .then((DocumentSnapshot documentSnapshot) {
+//      if (documentSnapshot.exists) {
+//        print('Document exists on the database');
+//        print(documentSnapshot.id);
+//      }
+//      else {
+//        print('sad');
+//      }
+//    });
   }
-  List<Task> _todoItems = [];
-  List<Category> _categories = [Category(), Category(subject: "Math", color: Colors.lightBlueAccent)];
-  int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _openDrawer() {
@@ -92,17 +94,17 @@ class _TodoListState extends State<TodoList> {
   void _closeDrawer() {
     Navigator.of(context).pop();
   }
-  void _removeTodoItem(int index) {
-    setState(() => _todoItems.removeAt(index));
+  void _removeTodoItem(String id) {
+    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('tasks').doc(id).delete();
   }
 
 // Show an alert dialog asking the user to confirm that the task is done
-  void _promptRemoveTodoItem(int index) {
+  void _promptRemoveTodoItem(Task task) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return new AlertDialog(
-              title: new Text('Mark "${_todoItems[index]}" as done?'),
+              title: new Text('Mark "${task.taskName}" as done?'),
               actions: <Widget>[
                 new FlatButton(
                     child: new Text('CANCEL'),
@@ -111,7 +113,7 @@ class _TodoListState extends State<TodoList> {
                 new FlatButton(
                     child: new Text('MARK AS DONE'),
                     onPressed: () {
-                      _removeTodoItem(index);
+                      _removeTodoItem(task.id);
                       Navigator.of(context).pop();
                     }
                 )
@@ -122,42 +124,126 @@ class _TodoListState extends State<TodoList> {
   }
 
   Widget _buildTodoList() {
-    return new ListView.builder(
-      // ignore: missing_return
-      itemBuilder: (context, index) {
-        if (index < _todoItems.length) {
-          return _buildTodoItem(_todoItems[index], index);
+    return authStatus != AuthStatus.signedIn ? Container(child: Text('please sign in'),) : StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('tasks').orderBy('dueDate', descending: false).snapshots(),
+        builder: (context, AsyncSnapshot snapshot) {
+          return StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('users').doc(
+                  FirebaseAuth.instance.currentUser.uid).collection(
+                  'master category list').snapshots(),
+              builder: (context, AsyncSnapshot catSnapshot) {
+                List taskList = [];
+                for (int i = 0; i < snapshot.data.docs.length; i++) {
+                  Category category;
+                  DocumentSnapshot snap = snapshot.data.docs[i];
+                  for(int j = 0; j < catSnapshot.data.docs.length; j++) {
+                    DocumentSnapshot catSnap = catSnapshot.data.docs[j];
+//                    print('id:' + catSnap.id);
+//                    print(catSnap['category']);
+                    if(catSnapshot.data.docs[j].id == snap['category']) {
+//                      print('id:' + catSnap.id);
+//                      print(catSnap['category']);
+                      category = new Category(
+                          subject: catSnap['category'],
+                          color: HexColor(catSnap['color']),
+                          id: catSnap.id);
+                    }
+                    else{print('failed');}
+                  }
+                  taskList.add(
+                      Task(taskName: snap['taskName'],
+                          description: snap['description'],
+                          id: snap.id,
+                          category: category,
+                          date: DateTime.parse(
+                              snap['dueDate'].toDate().toString())
+                      )
+                  );
+                }
+                return new ListView.builder(
+                  // ignore: missing_return
+                  itemBuilder: (context, index) {
+                    if (index < taskList.length) {
+                      return _buildTodoItem(taskList[index],);
+                    }
+                  },
+                );
+              }
+
+          );
         }
-      },
     );
   }
 
-  Widget _buildTodoItem(Task todoTask, int index) {
+  Widget _buildTodoItem(Task todoTask,) {
+
     return Card(
-      child: ListTile(
-        title: Text(todoTask.taskName),
-        subtitle: Text(
-          todoTask.category.subject,
-          style: TextStyle(color: todoTask.category.color),
-        ),
-        onTap: () => _promptRemoveTodoItem(index),
-        trailing: RaisedButton(
-          onPressed: () => _pushEditTodoScreen(todoTask, index),
-        ),
+//      child: ListTile(
+//        title: Text(todoTask.taskName),
+//        subtitle: Text(
+//          todoTask.category.subject,
+//          style: TextStyle(
+//              //color: todoTask.category.color
+//          ),
+//        ),
+//        onTap: () => _promptRemoveTodoItem(todoTask),
+//        trailing: IconButton(
+//          onPressed: () => _pushEditTodoScreen(todoTask),
+//          icon: Icon(Icons.create),
+//        ),
+//      ),
+//      color: todoTask.category.color,
+      child: Stack(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: todoTask.category.color,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    todoTask.taskName,
+                  ),
+                  Text(
+                    todoTask.description,
+                  ),
+                  Text(
+                    todoTask.category.subject,
+                  ),
+                  Text(
+                    todoTask.date.toString(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 80,
+            color: Colors.transparent,
+            child: GestureDetector(
+              onTap: () => _promptRemoveTodoItem(todoTask),
+            ),
+          ),
+          Positioned(
+            right: 15,
+            top: 15,
+            child: IconButton(
+                icon: Icon(Icons.create),
+                onPressed: () => _pushEditTodoScreen(todoTask),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  void _addTodoItem(String task){
-    setState(() {
-      _todoItems.add(Task(taskName: task, category: dropdownValue == null ? _categories[0]:dropdownValue));
-    });
-  }
-  void _editTodoItem(Task task, int index){
-    setState(() {
-      _todoItems[index] = task;
-    });
-  }
   Widget _buildCategoryList() {
     return authStatus != AuthStatus.signedIn ? Container(child: Text('please sign in'),) : StreamBuilder(
       stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list').snapshots(),
@@ -171,341 +257,68 @@ class _TodoListState extends State<TodoList> {
             // ignore: missing_return
             itemBuilder: (context, index) {
               if (index < categoryList.length) {
-                return _buildCategory(categoryList[index], index);
+                return _buildCategory(categoryList[index]);
               }
             },
           );
         }
     );
-//    return new ListView.builder(
-//      // ignore: missing_return
-//      itemBuilder: (context, index) {
-//        if (index < _categories.length - 1) {
-//          return _buildCategory(_categories[index + 1], index);
-//        }
-//      },
-//    );
   }
 
-  Widget _buildCategory(Category category, int index) {
+  Widget _buildCategory(Category category) {
     return Card(
       child: new ListTile(
         title: new Text(
           category.subject,
           style: TextStyle(color: category.color),
         ),
-        trailing: RaisedButton(
-          onPressed: () => _pushEditCategoryScreen(category, index),
+        trailing: IconButton(
+          onPressed: () => _pushEditCategoryScreen(category),
+          icon: Icon(Icons.create),
 
         ),
       ),
     );
   }
 
-  void _addCategory(Category category){
-//    setState(() {
-//      _categories.add(category);
-//    });
-    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list').add({'category': category.subject, 'color': currentColor.value.toRadixString(16)});
-  }
 
-  void _editCategory(Category category, int index){
-//    setState(() {
-//      _categories[index + 1] = category;
-//    });
-    print('yo:' + category.id);
-    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).collection('master category list')
-        .doc(category.id).set({'color': category.color.value.toRadixString(16), 'category': category.subject});
+  void _pushEditTodoScreen(Task task){
+    Navigator.of(context).push(
+        new MaterialPageRoute(
+            builder: (context) {
+              return EditTodoScreen(task: task, authStatus: authStatus,);
+            }
+        )
+    );
   }
-
-  Category dropdownValue;
   void _pushAddTodoScreen(){
-    bool checkIsPressable = false;
-    String taskMainText;
-    //Category dropdownValue = _categories[0];
-    dropdownValue = null;
     Navigator.of(context).push(
         new MaterialPageRoute(
             builder: (context) {
-              return new Scaffold(
-                  appBar: AppBar(
-                    title: Text('Add New Task'),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.check),
-                        onPressed: (){
-                          if (checkIsPressable){
-                            _addTodoItem(taskMainText);
-                            Navigator.pop(context);
-                          }
-                        },
-                      )
-                    ],
-                  ),
-                  body: Column(
-                    children: <Widget>[
-                      TextField(
-                          autofocus: true,
-                          onSubmitted: (val) {
-                            taskMainText = val;
-                            checkIsPressable = true;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Enter task...",
-                              contentPadding: const EdgeInsets.all(16.0)
-                          )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(100.0),
-                        child: DropdownButton(
-                          hint: Text(
-                            dropdownValue == null ? "Choose Category":dropdownValue.subject,
-                            style: TextStyle(color: dropdownValue == null ? Colors.deepPurple:dropdownValue.color),
-                          ),
-                          value: dropdownValue,
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (newValue) {
-                            setState(() {
-                              dropdownValue = newValue;
-                            });
-                          },
-                          items: _categories.map<DropdownMenuItem> ((value) {
-                            return DropdownMenuItem(
-                              value: value,
-                              child: Text(
-                                value.subject,
-                                style: TextStyle(color: value.color),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    ],
-                  )
-              );
+              return AddTodoScreen(authStatus: authStatus,);
             }
         )
     );
   }
-
-  void _pushEditTodoScreen(Task todoTask, int index){
-    bool checkIsPressable = false;
-    String taskMainText;
-    dropdownValue = todoTask.category;
-    Navigator.of(context).push(
-        new MaterialPageRoute(
-            builder: (context) {
-              return new Scaffold(
-                  appBar: AppBar(
-                    title: Text('Edit Task'),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.check),
-                        onPressed: (){
-                          if (checkIsPressable){
-                            _editTodoItem(Task(taskName: taskMainText, category: dropdownValue), index);
-                            Navigator.pop(context);
-                          }
-                        },
-                      )
-                    ],
-                  ),
-                  body: Column(
-                    children: <Widget>[
-                      TextFormField(
-                          autofocus: true,
-                          initialValue: todoTask.taskName,
-                          onFieldSubmitted: (val) {
-                            taskMainText = val;
-                            checkIsPressable = true;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Enter task...",
-                              contentPadding: const EdgeInsets.all(16.0)
-                          )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(100.0),
-                        child: DropdownButton(
-                          hint: Text(
-                            dropdownValue == null ? "Choose Category":dropdownValue.subject,
-                            style: TextStyle(color: dropdownValue == null ? Colors.deepPurple:dropdownValue.color),
-                          ),
-                          value: dropdownValue,
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.deepPurpleAccent,
-                          ),
-                          onChanged: (newValue) {
-                            setState(() {
-                              dropdownValue = newValue;
-                            });
-                          },
-                          items: _categories.map<DropdownMenuItem> ((value) {
-                            return DropdownMenuItem(
-                              value: value,
-                              child: Text(
-                                value.subject,
-                                style: TextStyle(color: value.color),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    ],
-                  )
-              );
-            }
-        )
-    );
-  }
-
   void _pushAddCategoryScreen(){
-    currentColor = Colors.grey;
-    pickerColor = Colors.grey;
     Navigator.of(context).push(
         new MaterialPageRoute(
             builder: (context) {
-              return new Scaffold(
-                  appBar: AppBar(
-                      title: Text('Add New Category')
-                  ),
-                  body: Column(
-                    children: <Widget>[
-                      TextField(
-                          autofocus: true,
-                          onSubmitted: (val) {
-                            _addCategory(Category(subject: val, color: currentColor));
-                            Navigator.pop(context);
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Enter task...",
-                              contentPadding: const EdgeInsets.all(16.0)
-                          )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(100.0),
-                        child: RaisedButton(
-                          color: currentColor,
-                          onPressed: () => _showMaterialDialog(),
-                          child: Text(
-                            "Choose Color",
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-              );
+              return AddCategoryScreen();
+            }
+        )
+    );
+  }
+  void _pushEditCategoryScreen(Category category){
+    Navigator.of(context).push(
+        new MaterialPageRoute(
+            builder: (context) {
+              return EditCategoryScreen(category: category,);
             }
         )
     );
   }
 
-  void _pushEditCategoryScreen(Category category, int index){
-    pickerColor = category.color;
-    currentColor = category.color;
-    Navigator.of(context).push(
-        new MaterialPageRoute(
-            builder: (context) {
-              return new Scaffold(
-                  appBar: AppBar(
-                      title: Text('Edit Category')
-                  ),
-                  body: Column(
-                    children: <Widget>[
-                      TextFormField(
-                          autofocus: true,
-                          initialValue: category.subject,
-                          onFieldSubmitted: (val) {
-                            _editCategory(Category(subject: val, color: currentColor, id: category.id), index);
-                            Navigator.pop(context);
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Enter task...",
-                              contentPadding: const EdgeInsets.all(16.0)
-                          )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(100.0),
-                        child: RaisedButton(
-                          color: currentColor,
-                          onPressed: () => _showMaterialDialog(),
-                          child: Text(
-                            "Choose Color",
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-              );
-            }
-        )
-    );
-  }
-
-  // create some values
-  Color pickerColor;
-  Color currentColor;
-
-// ValueChanged<Color> callback
-  void changeColor(Color color) {
-    setState(() => pickerColor = color);
-  }
-  _showMaterialDialog(){
-    showDialog(
-      context: context,
-      child: AlertDialog(
-        title: const Text('Pick a color!'),
-        content: SingleChildScrollView(
-          child: ColorPicker(
-            pickerColor: pickerColor,
-            onColorChanged: changeColor,
-            showLabel: true,
-            pickerAreaHeightPercent: 0.8,
-          ),
-          // Use Material color picker:
-          //
-          // child: MaterialPicker(
-          //   pickerColor: pickerColor,
-          //   onColorChanged: changeColor,
-          //   showLabel: true, // only on portrait mode
-          // ),
-          //
-          // Use Block color picker:
-          //
-          // child: BlockPicker(
-          //   pickerColor: currentColor,
-          //   onColorChanged: changeColor,
-          // ),
-          //
-          // child: MultipleChoiceBlockPicker(
-          //   pickerColors: currentColors,
-          //   onColorsChanged: changeColors,
-          // ),
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: const Text('Got it'),
-            onPressed: () {
-              setState(() => currentColor = pickerColor);
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
     List<AppBar> appBars = [

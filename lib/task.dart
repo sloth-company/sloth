@@ -5,5 +5,6 @@ class Task {
   String description;
   Category category;
   DateTime date;
-  Task({Key key, this.taskName: "", this.description: "", this.category, this.date: null,});
+  String id;
+  Task({Key key, this.taskName: "", this.description: "", this.category, this.date: null, this.id:""});
 }

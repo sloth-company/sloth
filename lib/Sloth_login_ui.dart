@@ -72,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
             'school': dropdownValueSchool,
           });
           users.doc(user.uid).collection('master category list').add({'category': 'miscellaneous', 'color': '0xff808080'});
+          users.doc(user.uid).collection('tasks').add({'taskName': 'placeholder', 'category': 'miscellaneous', 'description': '', 'dueDate': DateTime.now()});
           print(_email);
           print(_password);
           Navigator.pop(context);
