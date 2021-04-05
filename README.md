@@ -1,6 +1,6 @@
 # sloth
 
-A new Flutter application.
+A app that helps users manage their time wisely and organize their work.
 
 ## Getting Started
 
