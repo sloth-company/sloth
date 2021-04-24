@@ -29,6 +29,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
 //  print(dropdownValue.subject);
 //  print(dropdownValue.color.value);
   DateTime dueDate;
+  bool refresh = false;
   List <Category> catList=[];
   @override
   void initState() {
@@ -39,6 +40,16 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
       dropdownValue = widget.task.category;
       dueDate = widget.task.date;
     });
+    for(int i = 0; i<catList.length; i++){
+      if(dropdownValue.subject == catList[i].subject && dropdownValue.color == catList[i].color && dropdownValue.id == catList[i].id){
+        setState(() {
+          dropdownValue = catList[i];
+        });
+        print("why doesn't this work man");
+      }
+      print("catList"+i.toString());
+    }
+    print(catList.length);
     print('initial value ' + dropdownValue.subject);
     print('initial value ' + dropdownValue.color.value.toRadixString(16));
     print('initial value ' + dropdownValue.id);
@@ -166,6 +177,16 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
                             print('actually identical');
                           }
                           else{print('pain');}
+                        }
+                        if(refresh == false){
+                          for(int i = 0; i<catList.length; i++){
+                            if(dropdownValue.subject == catList[i].subject && dropdownValue.color == catList[i].color && dropdownValue.id == catList[i].id){
+                              dropdownValue = catList[i];
+                              print("why doesn't this work man");
+                            }
+                            print("catList"+i.toString());
+                          }
+                          refresh = true;
                         }
                         return DropdownButtonFormField(
                           items: catList.map<DropdownMenuItem<Category>>((Category value) {
